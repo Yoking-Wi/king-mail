@@ -101,6 +101,13 @@
             <version>1.1.10</version>
         </dependency>
         <!-- druid配置 end-->
+
+        <!-- websocket配置 start-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- websocket配置 end-->
     </dependencies>
 
     <build>

@@ -12,6 +12,8 @@ import top.sinch.kingmail.domain.Email;
 import top.sinch.kingmail.domain.EmailAddress;
 import top.sinch.kingmail.domain.dto.EmailDTO;
 import top.sinch.kingmail.domain.vo.EmailVO;
+import top.sinch.kingmail.service.EmailAddressService;
+import top.sinch.kingmail.service.EmailQuartzJobService;
 import top.sinch.kingmail.service.EmailService;
 import top.sinch.kingmail.tool.ResponseData;
 
@@ -33,19 +35,24 @@ public class EmailController {
     private static Logger logger = LoggerFactory.getLogger(EmailController.class);
     @Autowired
     EmailService emailService;
+    @Autowired
+    EmailAddressService emailAddressService;
+    @Autowired
+    EmailQuartzJobService emailQuartzJobService;
 
-    @ApiOperation(value = "发送文本邮件")
+
+    @ApiOperation(value = "发送邮件")
     @PostMapping("")
     public String send(@RequestBody @Valid EmailVO emailVO) {
-        logger.info("发送文本邮件");
+        logger.info("发送邮件");
         // 若用户有输入邮箱地址
         if (emailVO.getAddress() != null && !emailVO.getAddress().trim().isEmpty()) {
             EmailAddress address = new EmailAddress();
             address.setAddress(emailVO.getAddress());
-            emailService.saveEmailAddress(address);
+            emailAddressService.saveEmailAddress(address);
         }
         // 随机获取一个邮箱地址
-        EmailAddress emailAddress = emailService.getRandomly();
+        EmailAddress emailAddress = emailAddressService.getRandomly();
         // VO转DTO
         Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
@@ -63,10 +70,10 @@ public class EmailController {
             EmailAddress address = new EmailAddress();
             address.setAddress(emailVO.getAddress());
             //邮箱地址入库
-            emailService.saveEmailAddress(address);
+            emailAddressService.saveEmailAddress(address);
         }
         // 随机获取一个邮箱地址
-        EmailAddress emailAddress = emailService.getRandomly();
+        EmailAddress emailAddress = emailAddressService.getRandomly();
         // VO转DTO
         Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
@@ -79,11 +86,19 @@ public class EmailController {
         return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), ""));
     }
 
-    @ApiOperation(value = "获取所有定时任务的状态")
-    @GetMapping("/schedule/states")
-    public String listEmailQuartzJobStates() {
-        logger.info("获取所有定时任务的状态");
-        Map emailQuartzJobStateMap = emailService.listEmailQuartzJobStates();
+    @ApiOperation(value = "获取所有定时任务状态")
+    @GetMapping("/schedule/triggers-state")
+    public String listEmailQuartzTriggersState() {
+        logger.info("获取所有定时任务状态");
+        Map emailQuartzJobStateMap = emailQuartzJobService.listEmailQuartzTriggersState();
         return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), emailQuartzJobStateMap));
+    }
+
+    @ApiOperation(value = "获取所有已完成任务的数量")
+    @GetMapping("/schedule/completed-job-number")
+    public String countCompletedEmailQuartzJob() {
+        logger.info("获取所有已完成任务的数量");
+        int completedJobNumber = emailQuartzJobService.countCompletedEmailQuartzJob();
+        return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), completedJobNumber));
     }
 }

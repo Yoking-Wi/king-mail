@@ -1,6 +1,7 @@
 package top.sinch.kingmail.service;
 
 import org.quartz.*;
+import org.quartz.core.QuartzScheduler;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import top.sinch.kingmail.dao.EmailAddressMapper;
 import top.sinch.kingmail.dao.EmailMapper;
@@ -36,7 +38,11 @@ public class EmailService {
     @Autowired
     EmailMapper emailMapper;
     @Autowired
-    EmailAddressMapper emailAddressMapper;
+    EmailAddressService emailAddressService;
+    @Autowired
+    EmailQuartzJobService emailQuartzJobService;
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
     @Value("${spring.mail.username}")
     String username;
 
@@ -74,37 +80,13 @@ public class EmailService {
 
             //存入数据库
             emailMapper.insert(email);
-            //数据库中没有该邮箱地址时
-            if (null == emailAddressMapper.getByAddress(emailAddress.getAddress())) {
-                emailAddressMapper.insert(emailAddress);
-            }
+            emailAddressService.saveEmailAddress(emailAddress);
+
+            // websocket 推送消息 已完成的任务数量
+            // bug：此处查出的job可能会比数据库中少；推断应该是trigger触发后，没来得及删除记录，就查询了，故少了
+            simpMessagingTemplate.convertAndSend("/topic/completed-job-number", emailQuartzJobService.countCompletedEmailQuartzJob());
         } catch (MessagingException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    /**
-     * 随机获取一个邮箱地址
-     *
-     * @return
-     */
-    public EmailAddress getRandomly() {
-        //当数据量大于100行时
-        if (emailAddressMapper.count() >= 100) {
-            emailAddressMapper.getRandomlyAndFastly();
-        }
-        return emailAddressMapper.getRandomly();
-    }
-
-    /**
-     * 保存邮箱地址
-     *
-     * @param emailAddress
-     */
-    public void saveEmailAddress(EmailAddress emailAddress) {
-        //数据库中没有该邮箱地址时
-        if (null == emailAddressMapper.getByAddress(emailAddress.getAddress())) {
-            emailAddressMapper.insert(emailAddress);
         }
     }
 
@@ -121,9 +103,9 @@ public class EmailService {
         EmailAddress emailAddress = emailDTO.getEmailAddress();
 
         // 创建定时任务实例
-        JobDetail jobDetail = this.buildJobDetail(email, emailAddress);
+        JobDetail jobDetail = emailQuartzJobService.buildJobDetail(email, emailAddress);
         // 创建定时任务触发器
-        Trigger trigger = this.buildTrigger(jobDetail, email.getSendTime());
+        Trigger trigger = emailQuartzJobService.buildTrigger(jobDetail, email.getSendTime());
         try {
             //定时任务
             scheduler.scheduleJob(jobDetail, trigger);
@@ -132,68 +114,5 @@ public class EmailService {
             ex.printStackTrace();
         }
         logger.info("邮件将在 " + email.getSendTime() + " 发送");
-    }
-
-    /**
-     * 获取所有定时任务状的状态
-     *
-     * @return
-     */
-    public Map listEmailQuartzJobStates() {
-        Map emailQuartzJobStateMap = new HashMap();
-        try {
-            //获取所有的触发器组
-            List<String> triggerGroupNames = scheduler.getTriggerGroupNames();
-            for (String groupName : triggerGroupNames) {
-                //根据groupName获取匹配条件
-                GroupMatcher groupMatcher = GroupMatcher.groupEquals(groupName);
-                //根据groupMatcher(匹配条件)获取所有的triggerKey
-                Set<TriggerKey> triggerKeySet = scheduler.getTriggerKeys(groupMatcher);
-                for (TriggerKey triggerKey : triggerKeySet) {
-                    //根据triggerKey获取trigger状态
-                    emailQuartzJobStateMap.put(triggerKey.getName(), scheduler.getTriggerState(triggerKey).name());
-                }
-            }
-        } catch (SchedulerException ex) {
-            ex.printStackTrace();
-        }
-        return emailQuartzJobStateMap;
-    }
-
-    /**
-     * 创建邮件的定时任务实例
-     *
-     * @param email 邮件实体类
-     * @return
-     */
-    private JobDetail buildJobDetail(Email email, EmailAddress emailAddress) {
-        JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("address", emailAddress.getAddress());
-        jobDataMap.put("subject", email.getSubject());
-        jobDataMap.put("content", email.getContent());
-        jobDataMap.put("type", email.getType());
-        jobDataMap.put("sendTime", email.getSendTime());
-        return JobBuilder.newJob(EmailQuartzJob.class)
-                .withIdentity(UUID.randomUUID().toString(), "email-quartz-jobs")
-                .withDescription("send-email job")
-                .usingJobData(jobDataMap)
-                .storeDurably()
-                .build();
-    }
-
-    /**
-     * 创建定时任务的触发器
-     *
-     * @param jobDetail 定时任务
-     * @param sendTime  发送时间
-     * @return
-     */
-    private Trigger buildTrigger(JobDetail jobDetail, Date sendTime) {
-        return TriggerBuilder.newTrigger().forJob(jobDetail)
-                .withIdentity(jobDetail.getKey().getName(), "email-quartz-triggers")
-                .withDescription("send-email trigger")
-                .startAt(sendTime)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
-                .build();
     }
 }
