@@ -16,6 +16,7 @@ import java.util.Date;
 
 /**
  * Email定时任务
+ *
  * @author sincH
  * @since 2019年3月5日 19:51:59
  */
@@ -30,11 +31,14 @@ public class EmailQuartzJob extends QuartzJobBean {
         String subject = jobDataMap.getString("subject");
         String content = jobDataMap.getString("content");
         String address = jobDataMap.getString("address");
+        String type = jobDataMap.getString("type");
         Date sendTime = (Date) jobDataMap.get("sendTime");
+
 
         EmailBO emailBO = EmailBO.getInstanceWithEmailAndAddress();
         emailBO.getEmail().setSubject(subject);
         emailBO.getEmail().setContent(content);
+        emailBO.getEmail().setType(type);
         emailBO.getEmail().setSendTime(sendTime);
         emailBO.getEmailAddress().setAddress(address);
         // BO 转 DTO

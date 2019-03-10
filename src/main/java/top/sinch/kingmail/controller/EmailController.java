@@ -47,27 +47,28 @@ public class EmailController {
         // 随机获取一个邮箱地址
         EmailAddress emailAddress = emailService.getRandomly();
         // VO转DTO
-        Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getSendTime());
+        Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
         EmailDTO emailDTO = new EmailDTO(email, emailAddress);
         emailService.send(emailDTO);
         return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
     }
 
-    @ApiOperation(value = "定时发送文本邮件")
+    @ApiOperation(value = "定时发送邮件")
     @PostMapping("/schedule")
     public String sendWithSchedule(@RequestBody @Valid EmailVO emailVO) {
-        logger.info("定时发送文本邮件");
+        logger.info("定时发送邮件");
         // 若用户有输入邮箱地址
         if (emailVO.getAddress() != null && !emailVO.getAddress().trim().isEmpty()) {
             EmailAddress address = new EmailAddress();
             address.setAddress(emailVO.getAddress());
+            //邮箱地址入库
             emailService.saveEmailAddress(address);
         }
         // 随机获取一个邮箱地址
         EmailAddress emailAddress = emailService.getRandomly();
         // VO转DTO
-        Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getSendTime());
+        Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
         EmailDTO emailDTO = new EmailDTO(email, emailAddress);
 

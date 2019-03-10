@@ -24,6 +24,14 @@ public class EmailBO {
      */
     private EmailAddress emailAddress;
 
+    public EmailBO() {
+    }
+
+    public EmailBO(Email email, EmailAddress emailAddress) {
+        this.email = email;
+        this.emailAddress = emailAddress;
+    }
+
     /**
      * 获取EmailBO对象；此对象拥有Email和EmailAddress的实例
      * 节省新建EmailBO对象时的麻烦：
@@ -31,7 +39,7 @@ public class EmailBO {
      * EmailAddress emailAddress = new EmailAddress();
      */
     public static EmailBO getInstanceWithEmailAndAddress() {
-        EmailBO emailBO= new EmailBO();
+        EmailBO emailBO = new EmailBO();
         emailBO.email = new Email();
         emailBO.emailAddress = new EmailAddress();
         return emailBO;

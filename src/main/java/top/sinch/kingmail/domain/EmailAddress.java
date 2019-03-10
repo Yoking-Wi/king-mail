@@ -8,14 +8,17 @@ import javax.validation.constraints.Email;
 
 /**
  * 邮箱地址实体类
+ *
  * @author sincH
  * @since 2019.03.05
  */
 @Data
 @TableName(value = "biz_email_address")
 public class EmailAddress extends BaseBean {
-    public EmailAddress(){}
-    public EmailAddress(String address){
+    public EmailAddress() {
+    }
+
+    public EmailAddress(String address) {
         this.address = address;
     }
 

@@ -12,6 +12,7 @@ import java.util.UUID;
 /**
  * 自定义元数据对象处理器
  * 用于自动填充字段
+ *
  * @author sincH
  * @since 2019年3月5日 19:58:20
  */
@@ -23,13 +24,13 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         logger.info("start insert fill ....");
         Date insertTime = new Date();
-        this.setInsertFieldValByName("createTime",insertTime,metaObject);
-        this.setInsertFieldValByName("updateTime",insertTime,metaObject);
+        this.setInsertFieldValByName("createTime", insertTime, metaObject);
+        this.setInsertFieldValByName("updateTime", insertTime, metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         logger.info("start update fill ....");
-        this.setUpdateFieldValByName("updateTime",new Date(),metaObject);
+        this.setUpdateFieldValByName("updateTime", new Date(), metaObject);
     }
 }

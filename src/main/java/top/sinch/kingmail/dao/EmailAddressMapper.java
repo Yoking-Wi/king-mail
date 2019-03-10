@@ -7,6 +7,7 @@ import top.sinch.kingmail.domain.EmailAddress;
 
 /**
  * 邮箱地址 数据访问层
+ *
  * @author sincH
  * @since 2019年3月6日 09:32:52
  */
