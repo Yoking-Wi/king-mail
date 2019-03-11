@@ -83,7 +83,6 @@ public class EmailService {
             emailAddressService.saveEmailAddress(emailAddress);
 
             // websocket 推送消息 已完成的任务数量
-            // bug：此处查出的job可能会比数据库中少；推断应该是trigger触发后，没来得及删除记录，就查询了，故少了
             simpMessagingTemplate.convertAndSend("/topic/completed-job-number", emailQuartzJobService.countCompletedEmailQuartzJob());
         } catch (MessagingException ex) {
             ex.printStackTrace();

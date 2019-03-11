@@ -2,6 +2,7 @@ package top.sinch.kingmail.service;
 
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.spi.MutableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.sinch.kingmail.domain.Email;
@@ -67,9 +68,17 @@ public class EmailQuartzJobService {
                completedJobNum = jobKeySet.size();
                for (JobKey jobKey : jobKeySet) {
                    //根据jobKey获取任务拥有的触发器
-                   if(!scheduler.getTriggersOfJob(jobKey).isEmpty()){
-                       // 若有触发器 说明任务未完成
-                       completedJobNum--;
+                   List triggerList = scheduler.getTriggersOfJob(jobKey);
+                   // 若有触发器
+                   if(!triggerList.isEmpty()){
+                       for (Object trigger : triggerList){
+                           trigger = (Trigger)trigger;
+                           TriggerKey triggerKey = ((Trigger) trigger).getKey();
+                           // 且触发器状态不等于 COMPLETE 完成
+                           if(scheduler.getTriggerState(triggerKey)!= Trigger.TriggerState.COMPLETE){
+                               completedJobNum--;
+                           }
+                       }
                    }
                }
            }
