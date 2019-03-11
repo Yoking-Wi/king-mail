@@ -13,7 +13,7 @@ import java.util.UUID;
  * 自定义元数据对象处理器
  * 用于自动填充字段
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月5日 19:58:20
  */
 @Component

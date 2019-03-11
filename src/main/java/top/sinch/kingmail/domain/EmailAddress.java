@@ -9,7 +9,7 @@ import javax.validation.constraints.Email;
 /**
  * 邮箱地址实体类
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019.03.05
  */
 @Data

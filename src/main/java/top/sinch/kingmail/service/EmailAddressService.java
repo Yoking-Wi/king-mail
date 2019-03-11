@@ -8,7 +8,7 @@ import top.sinch.kingmail.domain.EmailAddress;
 /**
  * 邮件地址 服务层
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月10日 17:42:57
  */
 @Service

@@ -11,7 +11,7 @@ import top.sinch.kingmail.domain.bo.EmailBO;
  * 在controller层 VO转DTO
  * 在service层 DTO转DO 或者 DTO转BO，BO再转DO
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月6日 10:25:36
  */
 @Data

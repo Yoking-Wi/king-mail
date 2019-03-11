@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * 格式化工具
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月6日 12:30:03
  */
 public class FormattingTool {

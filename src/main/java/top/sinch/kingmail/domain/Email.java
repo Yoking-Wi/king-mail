@@ -7,10 +7,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import top.sinch.kingmail.domain.base.BaseBean;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
  * 邮件实体类
+ *
+ * @author yoking-wi
+ * @since 2019年3月11日 13:14:28
  */
 @Data
 @TableName(value = "biz_email")
@@ -34,6 +39,7 @@ public class Email extends BaseBean {
     /**
      * 邮件内容
      */
+    @NotBlank
     @TableField(exist = false)
     private String content;
 
@@ -42,6 +48,8 @@ public class Email extends BaseBean {
      * 可设置 0为文本 1为html等
      * 本项目中仅有html邮件
      */
+    @NotBlank
+    @Pattern(regexp = "html|simple",message = "type必须为html或simple")
     @TableField(exist = false)
     private String type;
 

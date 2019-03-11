@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * 邮件服务层
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019.03.04
  */
 @Service
@@ -66,7 +66,7 @@ public class EmailService {
             if (email.getSubject() != null && (!email.getSubject().trim().isEmpty())) {
                 mimeMessageHelper.setSubject(email.getSubject());
             } else {
-                mimeMessageHelper.setSubject("国王邮件");
+                mimeMessageHelper.setSubject("一封书信");
             }
             // 判断邮件类型
             if ("html".equals(email.getType())) {

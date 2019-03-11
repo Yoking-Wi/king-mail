@@ -17,7 +17,7 @@ import java.util.Date;
 /**
  * Email定时任务
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月5日 19:51:59
  */
 @Component

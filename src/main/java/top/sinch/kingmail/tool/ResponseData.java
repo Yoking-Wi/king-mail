@@ -6,7 +6,7 @@ import lombok.Data;
  * 响应数据类
  * 包装后端数据返回给前端显示
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019.03.04
  */
 @Data

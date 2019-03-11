@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * 基础实体类
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月5日 19:52:56
  */
 public class BaseBean {

@@ -5,13 +5,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
  * 邮件 视图对象
  * 封装前端页面需要的字段
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月6日 10:29:32
  */
 @Data
@@ -30,6 +32,7 @@ public class EmailVO {
     /**
      * 邮件内容
      */
+    @NotBlank
     private String content;
 
     /**
@@ -37,6 +40,8 @@ public class EmailVO {
      * 可设置0为文本 1为html等
      * 本项目中仅有html邮件
      */
+    @NotBlank
+    @Pattern(regexp = "html|simple",message = "type必须为html或simple")
     private String type;
 
     /**

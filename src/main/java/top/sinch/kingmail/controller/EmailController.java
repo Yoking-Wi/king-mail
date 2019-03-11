@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * 邮件控制层
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019.03.04
  */
 @CrossOrigin
@@ -78,8 +78,8 @@ public class EmailController {
         Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
         EmailDTO emailDTO = new EmailDTO(email, emailAddress);
-
-        if (!email.getSendTime().before(new Date())) {
+        // 发送时间必须在当前时间后
+        if (email.getSendTime().after(new Date())) {
             emailService.sendWithSchedule(emailDTO);
             return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
         }

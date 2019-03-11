@@ -9,7 +9,7 @@ import top.sinch.kingmail.domain.EmailAddress;
  * 封装 多个DO对象及其业务逻辑
  * 而 DTO 仅封装多个DO对象 用于数据传输
  *
- * @author sincH
+ * @author yoking-wi
  * @since 2019年3月6日 11:29:40
  */
 @Data
