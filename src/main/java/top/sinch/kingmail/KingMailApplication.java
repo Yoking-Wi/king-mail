@@ -10,7 +10,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @ComponentScan("top.sinch.kingmail")
 @MapperScan("top.sinch.kingmail.dao")
-@EnableSwagger2
 public class KingMailApplication {
 
     public static void main(String[] args) {

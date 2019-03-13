@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 import top.sinch.kingmail.domain.bo.EmailBO;
 import top.sinch.kingmail.domain.dto.EmailDTO;
 import top.sinch.kingmail.service.EmailService;
-import top.sinch.kingmail.tool.FormattingTool;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -33,7 +31,6 @@ public class EmailQuartzJob extends QuartzJobBean {
         String address = jobDataMap.getString("address");
         String type = jobDataMap.getString("type");
         Date sendTime = (Date) jobDataMap.get("sendTime");
-
 
         EmailBO emailBO = EmailBO.getInstanceWithEmailAndAddress();
         emailBO.getEmail().setSubject(subject);

@@ -102,12 +102,19 @@
         </dependency>
         <!-- druid配置 end-->
 
-        <!-- websocket配置 start-->
+        <!-- websocket配置 start -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
-        <!-- websocket配置 end-->
+        <!-- websocket配置 end -->
+
+        <!--  spring-security配置 start -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- spring-security配置 end -->
     </dependencies>
 
     <build>
