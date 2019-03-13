@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable(); //关闭 POST DELETE PUT 方式的token校验
         http.authorizeRequests()
                 .antMatchers("/api/**").permitAll() //api接口直接授权
                 .antMatchers("/swagger-ui.html").authenticated() //swagger 需要授权
