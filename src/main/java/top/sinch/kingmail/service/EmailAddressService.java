@@ -1,5 +1,6 @@
 package top.sinch.kingmail.service;
 
+import org.apache.ibatis.datasource.DataSourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.sinch.kingmail.dao.EmailAddressMapper;
@@ -22,11 +23,16 @@ public class EmailAddressService {
      * @return
      */
     public EmailAddress getRandomly() {
-        //当数据量大于100行时
-        if (emailAddressMapper.count() >= 100) {
-            emailAddressMapper.getRandomlyAndFastly();
+        // 数据库没有邮箱地址记录时，需自行插入几条初始数据
+        if(emailAddressMapper.count()==0){
+            throw new DataSourceException("数据库表biz_email_address无记录，请初始化数据库表biz_email_address");
         }
-        return emailAddressMapper.getRandomly();
+        //当数据量大于100行时
+        else if (emailAddressMapper.count() >= 100) {
+            return emailAddressMapper.getRandomlyAndFastly();
+        }else{
+            return emailAddressMapper.getRandomly();
+        }
     }
 
     /**

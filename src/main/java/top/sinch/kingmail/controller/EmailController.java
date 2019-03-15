@@ -78,12 +78,8 @@ public class EmailController {
         Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
         EmailDTO emailDTO = new EmailDTO(email, emailAddress);
-        // 发送时间必须在当前时间后
-        if (email.getSendTime().after(new Date())) {
-            emailService.sendWithSchedule(emailDTO);
-            return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
-        }
-        return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.INTERNAL_SERVER_ERROR.value()), "邮件定时发送时间错误", ""));
+        emailService.sendWithSchedule(emailDTO);
+        return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
     }
 
     @ApiOperation(value = "发送邮件给未来的自己")
@@ -98,12 +94,8 @@ public class EmailController {
         Email email = new Email(emailVO.getSubject(), emailVO.getContent(), emailVO.getType(), emailVO.getSendTime());
 //        EmailAddress emailAddress = new EmailAddress(emailVO.getAddress());
         EmailDTO emailDTO = new EmailDTO(email, address);
-        // 发送时间必须在当前时间后
-        if (email.getSendTime().after(new Date())) {
-            emailService.sendWithSchedule(emailDTO);
-            return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
-        }
-        return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.INTERNAL_SERVER_ERROR.value()), "邮件定时发送时间错误", ""));
+        emailService.sendWithSchedule(emailDTO);
+        return new Gson().toJson(new ResponseData(Integer.toString(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), ""));
     }
 
     @ApiOperation(value = "获取所有定时任务状态")

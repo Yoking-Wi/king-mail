@@ -3,6 +3,8 @@ package top.sinch.kingmail.service;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.MutableTrigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.sinch.kingmail.domain.Email;
@@ -19,6 +21,7 @@ import java.util.*;
  */
 @Service
 public class EmailQuartzJobService {
+    private static Logger logger = LoggerFactory.getLogger(EmailQuartzJobService.class);
     @Autowired
     Scheduler scheduler;
 
@@ -43,6 +46,7 @@ public class EmailQuartzJobService {
                 }
             }
         } catch (SchedulerException ex) {
+            logger.error("失败：获取所有定时任务状态");
             ex.printStackTrace();
         }
         return emailQuartzJobStateMap;
@@ -83,6 +87,7 @@ public class EmailQuartzJobService {
                }
            }
        } catch (SchedulerException ex) {
+           logger.error("失败：获取所有已完成任务的数量");
            ex.printStackTrace();
        }
        return completedJobNum;

@@ -18,8 +18,12 @@ import top.sinch.kingmail.domain.EmailAddress;
 import top.sinch.kingmail.domain.EmailQuartzJob;
 import top.sinch.kingmail.domain.dto.EmailDTO;
 
+import javax.mail.Address;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -45,6 +49,8 @@ public class EmailService {
     SimpMessagingTemplate simpMessagingTemplate;
     @Value("${spring.mail.username}")
     String username;
+    @Value("${spring.mail.nickname}")
+    String nickname;
 
     /**
      * 发送邮件
@@ -60,7 +66,10 @@ public class EmailService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message);
 
         try {
-            mimeMessageHelper.setFrom(this.username);
+//            mimeMessageHelper.setFrom(this.username, MimeUtility.encodeText(this.nickname));
+//            InternetAddress address = new InternetAddress(this.username, MimeUtility.encodeText(this.nickname));
+            //设置发件人别名
+            mimeMessageHelper.setFrom(this.username,this.nickname);
             mimeMessageHelper.setTo(emailAddress.getAddress());
             // email有主题且不为空字符串时
             if (email.getSubject() != null && (!email.getSubject().trim().isEmpty())) {
@@ -85,7 +94,11 @@ public class EmailService {
             // websocket 推送消息 已完成的任务数量
             simpMessagingTemplate.convertAndSend("/topic/completed-job-number", emailQuartzJobService.countCompletedEmailQuartzJob());
         } catch (MessagingException ex) {
+            logger.error("失败：邮件发送");
             ex.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            logger.error("失败：邮件发件人设置错误");
+            e.printStackTrace();
         }
     }
 
@@ -100,18 +113,17 @@ public class EmailService {
         // DTO 转 DO
         Email email = emailDTO.getEmail();
         EmailAddress emailAddress = emailDTO.getEmailAddress();
-
-        // 创建定时任务实例
-        JobDetail jobDetail = emailQuartzJobService.buildJobDetail(email, emailAddress);
-        // 创建定时任务触发器
-        Trigger trigger = emailQuartzJobService.buildTrigger(jobDetail, email.getSendTime());
         try {
+            // 创建定时任务实例
+            JobDetail jobDetail = emailQuartzJobService.buildJobDetail(email, emailAddress);
+            // 创建定时任务触发器
+            Trigger trigger = emailQuartzJobService.buildTrigger(jobDetail, email.getSendTime());
             //定时任务
             scheduler.scheduleJob(jobDetail, trigger);
+            logger.info("邮件将在 " + email.getSendTime() + " 发送");
         } catch (SchedulerException ex) {
-            logger.error("邮件定时失败");
+            logger.error("失败：邮件定时");
             ex.printStackTrace();
         }
-        logger.info("邮件将在 " + email.getSendTime() + " 发送");
     }
 }
